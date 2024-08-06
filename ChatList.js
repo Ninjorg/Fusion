@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { firestore } from '../lib/firebase';
+import { firestore } from '../lib/firebase'; // Ensure the path is correct
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const ChatList = () => {
@@ -11,7 +11,7 @@ const ChatList = () => {
       try {
         const chatCollection = collection(firestore, 'chats');
         const chatSnapshot = await getDocs(chatCollection);
-        const chatList = chatSnapshot.docs.map(doc => doc.data());
+        const chatList = chatSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setChats(chatList);
       } catch (error) {
         console.error("Error fetching chats: ", error);
@@ -23,7 +23,7 @@ const ChatList = () => {
         const userCollection = collection(firestore, 'users');
         const q = query(userCollection, where('online', '==', true));
         const userSnapshot = await getDocs(q);
-        const userList = userSnapshot.docs.map(doc => doc.data());
+        const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setOnlineUsers(userList);
       } catch (error) {
         console.error("Error fetching online users: ", error);
@@ -41,7 +41,7 @@ const ChatList = () => {
         <h3>Online Users</h3>
         <ul>
           {onlineUsers.map(user => (
-            <li key={user.email}>{user.username}</li>
+            <li key={user.id}>{user.username}</li>
           ))}
         </ul>
       </div>
